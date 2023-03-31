@@ -8,4 +8,4 @@ export type TimeSlot = {
 export type TestAppointment = {
   start: Dayjs;
   duration: number;
-}
+};

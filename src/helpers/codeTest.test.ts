@@ -1,6 +1,6 @@
-import dayjs from "dayjs";
-import { isAppointmentOverlap } from "helpers/timeSlotHelper";
-import { TestAppointment } from "types";
+import dayjs from 'dayjs';
+import { isAppointmentOverlap } from 'helpers/timeSlotHelper';
+import { TestAppointment } from 'types';
 
 describe('code test -- isAppointmentOverlap', () => {
   const now = dayjs();
@@ -39,30 +39,36 @@ describe('code test -- isAppointmentOverlap', () => {
         start: tomorrow,
         duration: 51,
       };
-      expect(isAppointmentOverlap(firstAppointment, lastAppointment)).toBe(true);
+      expect(isAppointmentOverlap(firstAppointment, lastAppointment)).toBe(
+        true
+      );
     });
     it('when the first appointment does not go over 50min, should return false', () => {
       const firstAppointment = {
         start: tomorrow,
         duration: 49,
       };
-      expect(isAppointmentOverlap(firstAppointment, lastAppointment)).toBe(false);
+      expect(isAppointmentOverlap(firstAppointment, lastAppointment)).toBe(
+        false
+      );
     });
     it('when the first appointment lasts 50min, should return false', () => {
       const firstAppointment = {
         start: tomorrow,
         duration: 50,
       };
-      expect(isAppointmentOverlap(firstAppointment, lastAppointment)).toBe(false);
+      expect(isAppointmentOverlap(firstAppointment, lastAppointment)).toBe(
+        false
+      );
     });
     it('when the first appointment lasts 50min and the order of the params is different, should still return false', () => {
       const firstAppointment = {
         start: tomorrow,
         duration: 50,
       };
-      expect(isAppointmentOverlap(lastAppointment, firstAppointment)).toBe(false);
+      expect(isAppointmentOverlap(lastAppointment, firstAppointment)).toBe(
+        false
+      );
     });
   });
-
 });
-  

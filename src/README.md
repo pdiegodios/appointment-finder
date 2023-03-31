@@ -12,9 +12,18 @@ Any change in the inputs will also impact the options display in the available t
 
 The solution is based on a very simple [Developer Challenge](#developer-challenge) which I intend to make better fun from it. There we go! 
 
+## Run the app
+
+No secrets here, you can find a small bunch of useful scripts to run in [package.json](../package.json).
+
+Let's start with:
+```
+    npm i && npm run start
+```
+
 ## Responsiveness
 
-The solution should be usable in tablet, mobile and Desktop view.
+The solution should be usable in tablet, mobile and Desktop view. I'll keep the responsiveness work to a minimum.
 
 ## Technical solution
 
@@ -27,6 +36,26 @@ The solution should be usable in tablet, mobile and Desktop view.
 - Internationalization: Language support and timezone management.
 - Theming: Proper theming.
 - BE work. 
+
+## TODO
+
+- Change the Type of Appointment to be more appropieated:
+    ```
+        type Appointment = {
+            customer: Customer;
+            timeSlot: TimeSlot;
+            notes: string;
+        }
+    ```
+- Introduce proper form validation with `formik` or the library of your choice.
+- Build API & Save Data.
+
+
+### NOTES
+
+- For simplicity it's assumed that the office hours are 8am to 5pm Mon-Fri. Public Holidays are not considered.
+- Also because makes no sense to make a booking from 8:57am, I've constrained the time selection to only allow quarters.
+- The State Management could be solved with `useState` and or Context. However in order to keep the main components props clean and preparing for future work (and also because is more fun) I've decided to give a crack to Zustand which I've heard of it but never had the chance to play with it. 
 
 # Developer Challenge
 

@@ -70,7 +70,7 @@ const AppointmentSelection = (): JSX.Element => {
       <SpaceBetweenContainer>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
-            inputFormat="DD/MM/YYYY HH:mm A"
+            inputFormat="DD/MM/YYYY HH:mm"
             label="Date"
             onChange={onDateChange}
             renderInput={params => (

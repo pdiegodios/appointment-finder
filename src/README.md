@@ -49,6 +49,9 @@ The solution should be usable in tablet, mobile and Desktop view. I'll keep the 
     ```
 - Introduce proper form validation with `formik` or the library of your choice.
 - Build API & Save Data.
+- Test Coverage: 
+    - Add automated tests.
+    - Maybe think about adding Snapshot test for minor elements. At a very early stage where we intend quick changes is probably a waste of time.
 
 
 ### NOTES

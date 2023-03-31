@@ -1,4 +1,5 @@
 import { TIME_FORMAT, DATE_FORMAT } from 'constants/dateTime';
+import { endOfWorkday, startOfWorkday, addWorkdays } from 'helpers/dateHelper';
 import { TestAppointment, TimeSlot } from 'types';
 
 /**
@@ -65,3 +66,25 @@ export const stringifyTimeSlot = (timeSlot: TimeSlot) =>
   `Date: ${stringifyTimeSlotDay(timeSlot)} | Time: ${stringifyTimeSlotTime(
     timeSlot
   )}`;
+
+/**
+ * 
+ * @param timeSlot a TimeSlot that can be start and end in different days
+ * @returns a list of timeslots taking in account the Start and end of the business day
+ */
+export const splitTimeSlotByWorkday = ({
+  start,
+  end,
+}: TimeSlot): TimeSlot[] => {
+  let currentStart = start;
+  let result: TimeSlot[] = [];
+  while (end.diff(currentStart, 'day') > 0) {
+    result = [
+      ...result,
+      { start: currentStart, end: endOfWorkday(currentStart) },
+    ];
+    currentStart = startOfWorkday(addWorkdays(currentStart, 1));
+  }
+  return [...result, { start: currentStart, end }];
+};
+

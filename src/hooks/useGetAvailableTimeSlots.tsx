@@ -1,3 +1,4 @@
+import { MIN_GAP_IN_MINUTES } from 'constants/dateTime';
 import { Dayjs } from 'dayjs';
 import { workdayRange } from 'helpers/dateHelper';
 import { splitTimeSlotByWorkday } from 'helpers/timeSlotHelper';
@@ -10,16 +11,8 @@ const timeGap = ({ start, end }: TimeSlot): number =>
 const RANGE_LENGTH = 5;
 
 const useGetAvailableTimeSlots = (): TimeSlot[] => {
-  const { appointments, currentAppointment } = useAppointmentStore();
-  if (!currentAppointment.end || !currentAppointment.start) return [];
-  const duration = timeGap({
-    start: currentAppointment.start,
-    end: currentAppointment.end,
-  });
-  const sevenDaysRange: TimeSlot = workdayRange(
-    currentAppointment.start,
-    RANGE_LENGTH
-  );
+  const { appointments, date, duration } = useAppointmentStore();
+  const sevenDaysRange: TimeSlot = workdayRange(date, RANGE_LENGTH);
   const currentAppointmentsInRange = appointments.filter(
     (a: TimeSlot) =>
       a.start.isAfter(sevenDaysRange.start) &&
@@ -43,7 +36,7 @@ const useGetAvailableTimeSlots = (): TimeSlot[] => {
       },
       []
     )
-    .filter(slot => timeGap(slot) >= duration);
+    .filter(slot => timeGap(slot) >= (duration || MIN_GAP_IN_MINUTES));
 };
 
 export default useGetAvailableTimeSlots;

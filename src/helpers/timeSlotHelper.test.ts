@@ -4,7 +4,7 @@ import {
   isAppointmentOverlap,
   splitTimeSlotByWorkday,
   stringifyTimeSlotDay,
-  stringifyTimeSlotTime
+  stringifyTimeSlotTime,
 } from 'helpers/timeSlotHelper';
 
 describe('timeSlotHelper', () => {
@@ -45,7 +45,7 @@ describe('timeSlotHelper', () => {
       };
       it('should return a list containing a single timeSlot', () => {
         expect(splitTimeSlotByWorkday(timeSlot)).toHaveLength(1);
-      })
+      });
     });
     describe('when time slot covers 32 working days', () => {
       const timeSlot = {
@@ -54,7 +54,7 @@ describe('timeSlotHelper', () => {
       };
       it('should return a list containing 32 timeSlots', () => {
         expect(splitTimeSlotByWorkday(timeSlot)).toHaveLength(32);
-      })
+      });
     });
   });
 

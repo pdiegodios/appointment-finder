@@ -49,7 +49,7 @@ The solution should be usable in tablet, mobile and Desktop view. I'll keep the 
     ```
 - Introduce proper form validation with `formik` or the library of your choice.
 - Build API & Save Data.
-- Test Coverage: 
+- Test Coverage: Because of the nature of the POC work I have focused on getting the WOW effect instead of the test coverage. However, this should be tackled ASAP.
     - Add automated tests.
     - Maybe think about adding Snapshot test for minor elements. At a very early stage where we intend quick changes is probably a waste of time.
 

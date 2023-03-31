@@ -1,20 +1,27 @@
 import styled from '@emotion/styled';
-import { Button, FormHelperText, TextField } from '@mui/material';
+import {
+  Box,
+  Button,
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  TextField,
+} from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import SectionTitle from 'components/SectionTitle';
 import SpaceBetweenContainer from 'components/SpaceBetweenContainer';
-import dayjs, { Dayjs } from 'dayjs';
+import { MIN_GAP_IN_MINUTES } from 'constants/dateTime';
+import { Dayjs } from 'dayjs';
 import {
-  endOfWorkday,
   getAppointmentDateError,
-  getAppointmentTimeError,
+  getMinDate,
   isAWeekend,
-  nextTimeFraction,
-  onlyAllowQuarters,
-  startOfWorkday,
+  stringifyMinutes,
 } from 'helpers/dateHelper';
 import useGetAvailableTimeSlots from 'hooks/useGetAvailableTimeSlots';
 import { useMemo } from 'react';
@@ -26,61 +33,44 @@ const StyledButton = styled(Button)`
 `;
 
 const AppointmentSelection = (): JSX.Element => {
-  const {
-    date,
-    setDate,
-    addAppointment,
-    setInitialTime,
-    setEndTime,
-    currentAppointment,
-  } = useAppointmentStore();
+  const { date, setDate, setDuration, addAppointment, duration } =
+    useAppointmentStore();
   const availableTimeSlots: TimeSlot[] = useGetAvailableTimeSlots();
+  const end: Dayjs = useMemo(
+    () => date.add(duration, 'minute'),
+    [date, duration]
+  );
 
-  const { start: initialTime, end: endTime } = currentAppointment;
-  const isComplete: boolean = !!(initialTime && endTime);
-  const now = dayjs();
+  const onDurationChange = (event: SelectChangeEvent) => {
+    setDuration(Number(event.target.value));
+  };
+
   const onDateChange = (day: unknown): void => setDate(day as Dayjs);
-  const onInitialTimeChange = (fromTime: unknown): void =>
-    setInitialTime(fromTime as Dayjs);
-  const onEndTimeChange = (toTime: unknown) => setEndTime(toTime as Dayjs);
   const onAddAppointment = (): void => {
-    if (initialTime && endTime) {
-      addAppointment({ start: initialTime, end: endTime });
+    if (duration) {
+      addAppointment({ start: date, end });
+      setDuration(0);
     }
   };
+  const dateError = getAppointmentDateError(date);
   const isAvailableSlot: boolean = useMemo(() => {
-    if (!isComplete) return false;
-    return !!availableTimeSlots.find(({ start, end }) => {
+    if (!duration || dateError) return false;
+    return !!availableTimeSlots.find(t => {
       const matchStart: boolean =
-        start.isBefore(currentAppointment.start) ||
-        start.isSame(currentAppointment.start);
-      const matchEnd: boolean =
-        end.isAfter(currentAppointment.end) ||
-        end.isSame(currentAppointment.end);
+        t.start.isBefore(date) || t.start.isSame(date);
+      const matchEnd: boolean = t.end.isAfter(end) || t.end.isSame(end);
       return matchStart && matchEnd;
     });
-  }, [currentAppointment, availableTimeSlots, isComplete]);
-  const isAddEnabled: boolean = !!currentAppointment && isAvailableSlot;
-  const dateError = getAppointmentDateError(date);
-  const initialTimeError = getAppointmentTimeError(initialTime);
-  const endTimeIsNotAfter = !!endTime && !endTime?.isAfter(initialTime);
-  const endTimeError = endTimeIsNotAfter
-    ? 'End has to be after start'
-    : getAppointmentTimeError(endTime);
-  const startOfSelectedDate = date && startOfWorkday(date);
-  const minStartTime = startOfSelectedDate.isBefore(now)
-    ? now
-    : startOfWorkday(date);
-  const maxStartTime = date && endOfWorkday(date);
-  const minEndTime = initialTime && nextTimeFraction(initialTime);
-  const maxEndTime = date && endOfWorkday(date);
+  }, [end, availableTimeSlots, date]);
+  const isAddEnabled: boolean = !!duration && !dateError && isAvailableSlot;
+
   return (
     <>
       <SectionTitle>New appointment</SectionTitle>
       <SpaceBetweenContainer>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
-            inputFormat="DD/MM/YYYY"
+            inputFormat="DD/MM/YYYY HH:mm A"
             label="Date"
             onChange={onDateChange}
             renderInput={params => (
@@ -90,42 +80,31 @@ const AppointmentSelection = (): JSX.Element => {
                 helperText={dateError}
               />
             )}
-            minDate={now}
+            minDate={getMinDate()}
             shouldDisableDate={isAWeekend}
             value={date}
           />
-          <TimePicker
-            disabled={!date}
-            label="Appointment Start"
-            maxTime={maxStartTime}
-            minTime={minStartTime}
-            onChange={onInitialTimeChange}
-            renderInput={params => (
-              <TextField
-                {...params}
-                helperText={initialTimeError}
-                error={!!initialTimeError}
-              />
-            )}
-            shouldDisableTime={onlyAllowQuarters}
-            value={initialTime || null}
-          />
-          <TimePicker
-            disabled={!initialTime}
-            label="Appointment End"
-            maxTime={maxEndTime}
-            minTime={minEndTime}
-            onChange={onEndTimeChange}
-            renderInput={params => (
-              <TextField
-                {...params}
-                helperText={endTimeError}
-                error={!!endTimeError}
-              />
-            )}
-            shouldDisableTime={onlyAllowQuarters}
-            value={endTime || null}
-          />
+          <Box sx={{ minWidth: 120 }}>
+            <FormControl fullWidth>
+              <InputLabel id="appointment-duration-label">Duration</InputLabel>
+              <Select
+                labelId="appointment-duration-label"
+                id="appointment-duration"
+                value={duration + ''}
+                label="Duration (min)"
+                onChange={onDurationChange}
+              >
+                {Array.from(
+                  { length: 8 },
+                  (_, i) => (i + 1) * MIN_GAP_IN_MINUTES
+                ).map(value => (
+                  <MenuItem value={value} key={value}>
+                    {stringifyMinutes(value)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
         </LocalizationProvider>
         <StyledButton
           onClick={onAddAppointment}
@@ -135,7 +114,7 @@ const AppointmentSelection = (): JSX.Element => {
           Add
         </StyledButton>
       </SpaceBetweenContainer>
-      {isComplete && !isAvailableSlot && (
+      {!!duration && !dateError && !isAvailableSlot && (
         <FormHelperText error>Appointment is not available</FormHelperText>
       )}
     </>

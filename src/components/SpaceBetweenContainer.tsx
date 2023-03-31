@@ -3,7 +3,7 @@ import { TABLET_ONLY } from 'constants/breakpoints';
 
 const SpaceBetweenContainer = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   column-gap: 0.5rem;
   ${TABLET_ONLY} {
     flex-direction: column;

@@ -27,7 +27,7 @@ const App = () => (
         <AppointmentSelection />
         <Box sx={{ m: '1rem' }} />
         <AppointmentAvailability />
-        <Box sx={{ m: '2rem' }} />
+        <Box sx={{ m: '1rem' }} />
         <AppointmentList />
       </PageWrapper>
     </ThemeProvider>

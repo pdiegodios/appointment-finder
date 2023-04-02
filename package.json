@@ -45,7 +45,7 @@
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "lint": "tsc --noEmit && eslint \"src/**/*.{ts,tsx}\" --max-warnings 0",
     "start": "react-scripts start",
-    "test:coverage": "react-scripts test --coverage --silent",
+    "test:coverage": "react-scripts test --coverage --silent --watchAll",
     "test": "react-scripts test"
   },
   "eslintConfig": {

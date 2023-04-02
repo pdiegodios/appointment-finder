@@ -2,7 +2,7 @@ import {
   CLOSING_TIME,
   MIN_GAP_IN_MINUTES,
   OPENING_TIME,
-  WEEKDAY
+  WEEKDAY,
 } from 'constants/dateTime';
 import dayjs, { Dayjs } from 'dayjs';
 import { TimeSlot } from 'types';
@@ -53,16 +53,24 @@ export const previousWorkday = (date: Dayjs): Dayjs =>
 export const nextWorkday = (date: Dayjs): Dayjs =>
   date.add(daysToNextWorkDay(date), 'day');
 export const startOfWorkday = (date: Dayjs): Dayjs =>
-  date.set('hour', OPENING_TIME).set('minute', 0);
+  date
+    .set('hour', OPENING_TIME)
+    .set('minute', 0)
+    .set('second', 0)
+    .set('millisecond', 0);
 export const endOfWorkday = (date: Dayjs): Dayjs =>
-  date.set('hour', CLOSING_TIME).set('minute', 0);
+  date
+    .set('hour', CLOSING_TIME)
+    .set('minute', 0)
+    .set('second', 0)
+    .set('millisecond', 0);
 export const isAWeekend = (date: Dayjs | null): boolean =>
   !!date && [WEEKDAY.SATURDAY, WEEKDAY.SUNDAY].includes(getWeekday(date));
 const isBeforeBusinessHours = (date: Dayjs | null): boolean =>
   !!date?.isBefore(date?.set('hour', OPENING_TIME));
 const isAfterBusinessHours = (date: Dayjs | null): boolean =>
   !!date?.isAfter(date?.set('hour', CLOSING_TIME));
-const isOutOfBusinessHours = (date: Dayjs | null): boolean =>
+export const isOutOfBusinessHours = (date: Dayjs | null): boolean =>
   isBeforeBusinessHours(date) || isAfterBusinessHours(date);
 
 const substractWorkdays = (date: Dayjs, numberOfDays: number): Dayjs => {

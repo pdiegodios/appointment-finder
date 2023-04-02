@@ -8,7 +8,7 @@ Once the inputs are populated the app will show the available timeslots for an a
 
 If the requested appointment is available the Add button will become enabled and you'll be able to add your appointment to the appointment list. 
 
-Any change in the inputs will also impact the options display in the available timeslots which will be based on proximity from requested date and should have at least enough time available to add an appointment with the same duration.
+Any change in the inputs will also impact the options displayed in the available timeslots which will be based on proximity from requested date and should have at least enough time available to add an appointment with the same duration.
 
 The solution is based on a very simple [Developer Challenge](#developer-challenge) which I intend to make better fun from it. There we go! 
 
@@ -34,7 +34,7 @@ The solution should be usable in tablet, mobile and Desktop view. I'll keep the 
 ## Out of Scope
 
 - Internationalization: Language support and timezone management.
-- Theming: Proper theming.
+- Theming: Proper theming. Avoid to get crazy on UX.
 - BE work. 
 
 ## TODO
@@ -52,6 +52,7 @@ The solution should be usable in tablet, mobile and Desktop view. I'll keep the 
 - Test Coverage: Because of the nature of the POC work I have focused on getting the WOW effect instead of the test coverage. However, this should be tackled ASAP.
     - Add automated tests.
     - Maybe think about adding Snapshot test for minor elements. At a very early stage where we intend quick changes is probably a waste of time.
+- Add Storybook for components.
 
 
 ### NOTES

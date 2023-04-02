@@ -93,6 +93,10 @@ export const getAppointmentDateError = (dayjs: Dayjs | null): string => {
   if (isAWeekend(dayjs)) {
     return "It's a weekend";
   }
+  return '';
+};
+
+export const getAppointmentTimeError = (dayjs: Dayjs | null): string => {
   if (isOutOfBusinessHours(dayjs)) {
     return 'Time is out of business hours';
   }
@@ -101,6 +105,18 @@ export const getAppointmentDateError = (dayjs: Dayjs | null): string => {
   }
   return '';
 };
+
+/**
+ * This function is used to limit the time selection to only allow 15 min fractions of each hour.
+ * @param timeValue: time value of clockType
+ * @param clockType: time measure. E.g.: seconds, minutes, hours...
+ * @returns true when timeValue is 0, 15, 30 or 45 and clocktype is minutes. Otherwise, returns false.
+ */
+export const onlyAllowQuarters = (
+  timeValue: number,
+  clockType: string
+): boolean => clockType === 'minutes' && !!(timeValue % MIN_GAP_IN_MINUTES);
+
 
 export const startOfWorkday = (date: Dayjs): Dayjs =>
   date.set('hour', OPENING_TIME).set('minute', 0);
@@ -126,4 +142,9 @@ export const stringifyMinutes = (minutes: number): string => {
     return `${h}h ${min < 10 ? '0' : ''}${readableMin}`;
   }
   return readableMin;
+};
+
+export const getClosestTimeSlot = (date = dayjs()) => {
+  const minutes = ((date.minute() % MIN_GAP_IN_MINUTES) + 1) * MIN_GAP_IN_MINUTES;
+  return date.set('minute', minutes).set('second', 0).set('millisecond', 0);
 };

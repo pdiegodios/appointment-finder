@@ -1,34 +1,58 @@
-import dayjs, { Dayjs } from 'dayjs';
-import { addWorkdays, endOfWorkday, startOfWorkday } from 'helpers/dateHelper';
+import { Dayjs } from 'dayjs';
+import { addWorkdays, endOfWorkday, getClosestTimeSlot, startOfWorkday } from 'helpers/dateHelper';
 import { TimeSlot } from 'types';
 import { create } from 'zustand';
 
 type Store = {
   appointments: TimeSlot[];
-  date: Dayjs;
+  date: Dayjs | null;
   duration: number;
   addAppointment: (appointment: TimeSlot) => void;
   deleteAppointment: (appointment: TimeSlot) => void;
-  setDate: (date: Dayjs) => void;
+  setDay: (date: Dayjs) => void;
   setDuration: (duration: number) => void;
+  setTime: (date: Dayjs) => void;
 };
 
 const byStartTime = (a: TimeSlot, b: TimeSlot) =>
   a.start.isBefore(b.start) ? -1 : 1;
 
 export const useAppointmentStore = create<Store>(set => {
-  const now = dayjs();
-  const initialDate = now.isAfter(endOfWorkday(now))
-    ? startOfWorkday(addWorkdays(now, 1))
-    : now;
+  const nextPossibleSlot = getClosestTimeSlot();
+  const initialDate = nextPossibleSlot.isAfter(endOfWorkday(nextPossibleSlot))
+    ? startOfWorkday(addWorkdays(nextPossibleSlot, 1))
+    : nextPossibleSlot;
   return {
     appointments: [],
     currentAppointment: {},
-    date: initialDate.set('seconds', 0).set('millisecond', 0),
+    date: initialDate,
     duration: 0,
     setDuration: (duration: number) => set(() => ({ duration })),
-    setDate: (date: Dayjs) =>
-      set(() => ({ date: date.set('seconds', 0).set('milliseconds', 0) })),
+    setDay: (day: Dayjs | null) => {
+      set(({ date }) => {
+        if (date && day) {
+          return ({ 
+            date: date
+                .set('year', day.year())
+                .set('month', day.month()) 
+                .set('date', day.date())
+          });
+        }
+        return ({
+          date: day ? startOfWorkday(day) : null
+        });
+      })},
+    setTime: (time: Dayjs | null) => {
+      set(({ date }) => {
+        if (date && time) {
+          return ({ 
+            date: date
+              .set('hour', time?.hour() || 0)
+              .set('minute', time?.minute() || 0) 
+          });
+        }
+        return ({ date });
+      })},
     addAppointment: (newAppointment: TimeSlot) =>
       set(({ appointments }) => ({
         appointments: [...appointments, newAppointment].sort(byStartTime),

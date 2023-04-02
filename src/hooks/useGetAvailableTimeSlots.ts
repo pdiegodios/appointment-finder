@@ -12,6 +12,7 @@ const RANGE_LENGTH = 5;
 
 const useGetAvailableTimeSlots = (): TimeSlot[] => {
   const { appointments, date, duration } = useAppointmentStore();
+  if (!date) return [];
   const sevenDaysRange: TimeSlot = workdayRange(date, RANGE_LENGTH);
   const currentAppointmentsInRange = appointments.filter(
     (a: TimeSlot) =>

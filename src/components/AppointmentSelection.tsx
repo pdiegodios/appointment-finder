@@ -8,7 +8,7 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
-  TextField
+  TextField,
 } from '@mui/material';
 import { LocalizationProvider, TimePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -25,7 +25,7 @@ import {
   isAWeekend,
   onlyAllowQuarters,
   startOfWorkday,
-  stringifyMinutes
+  stringifyMinutes,
 } from 'helpers/dateHelper';
 import useIsAvailableTimeSlot from 'hooks/useIsAvailableTimeSlot';
 import { useAppointmentStore } from 'store';

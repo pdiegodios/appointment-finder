@@ -1,5 +1,9 @@
 import { Dayjs } from 'dayjs';
-import { addWorkdays, endOfWorkday, getClosestTimeSlot, startOfWorkday } from 'helpers/dateHelper';
+import {
+  getClosestTimeSlot,
+  getMinDate,
+  startOfWorkday,
+} from 'helpers/dateHelper';
 import { TimeSlot } from 'types';
 import { create } from 'zustand';
 
@@ -19,9 +23,7 @@ const byStartTime = (a: TimeSlot, b: TimeSlot) =>
 
 export const useAppointmentStore = create<Store>(set => {
   const nextPossibleSlot = getClosestTimeSlot();
-  const initialDate = nextPossibleSlot.isAfter(endOfWorkday(nextPossibleSlot))
-    ? startOfWorkday(addWorkdays(nextPossibleSlot, 1))
-    : nextPossibleSlot;
+  const initialDate = getMinDate(nextPossibleSlot);
   return {
     appointments: [],
     currentAppointment: {},
@@ -31,28 +33,30 @@ export const useAppointmentStore = create<Store>(set => {
     setDay: (day: Dayjs | null) => {
       set(({ date }) => {
         if (date && day) {
-          return ({ 
+          return {
             date: date
-                .set('year', day.year())
-                .set('month', day.month()) 
-                .set('date', day.date())
-          });
+              .set('year', day.year())
+              .set('month', day.month())
+              .set('date', day.date()),
+          };
         }
-        return ({
-          date: day ? startOfWorkday(day) : null
-        });
-      })},
+        return {
+          date: day ? startOfWorkday(day) : null,
+        };
+      });
+    },
     setTime: (time: Dayjs | null) => {
       set(({ date }) => {
         if (date && time) {
-          return ({ 
+          return {
             date: date
               .set('hour', time?.hour() || 0)
-              .set('minute', time?.minute() || 0) 
-          });
+              .set('minute', time?.minute() || 0),
+          };
         }
-        return ({ date });
-      })},
+        return { date };
+      });
+    },
     addAppointment: (newAppointment: TimeSlot) =>
       set(({ appointments }) => ({
         appointments: [...appointments, newAppointment].sort(byStartTime),
